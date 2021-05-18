@@ -1,7 +1,7 @@
 <template>
   <div id="search-bar">
     <input
-      @input="debounceSearch"
+      @input="searchPost"
       placeholder="Search post title"
       class="search-field"
     />
@@ -15,10 +15,11 @@
       <div class="search-history">
         <div
           class="search-input"
-          v-for="item in searchHistory"
-          :key="`item-${item}`"
+          v-for="(item, index) in searchHistory"
+          :key="`item-${index}`"
         >
-          {{ item }}
+          {{ item.input }}
+          {{ item.date }}
           <div class="remove-history" @click="removeHistory(item)">Remove</div>
         </div>
       </div>
@@ -29,30 +30,42 @@
 <script lang="ts">
 import Vue from "vue";
 import axios from "axios";
+import _ from "lodash"; // type is added though..
+import { HistoryItem } from "@/store";
 
 export default Vue.extend({
   name: "SearchBar",
   data() {
     return {
-      searchInput: "",
       typing: "",
       posts: [],
       debounce: 0,
     };
   },
   methods: {
-    debounceSearch(event: any) {
+    /**
+     * Search for the post
+     */
+    searchPost(event: any) {
       const searchInput = event.target.value;
       if (!searchInput) {
         this.posts = [];
         return;
       }
 
-      this.typing = "You are typing";
+      const date = this.formatDate;
+      this.typing = "Searching post";
       clearTimeout(this.debounce);
+
+      // debounce for 1 second to reduce the amount of api calls.
       this.debounce = setTimeout(() => {
         this.typing = "";
-        this.$store.commit("addSearchHistory", searchInput);
+        this.$store.commit("addSearchHistory", {
+          input: searchInput,
+          date,
+        });
+
+        // search for the post title that match the input value
         axios
           .get("https://jsonplaceholder.typicode.com/posts")
           .then((response) => {
@@ -65,13 +78,25 @@ export default Vue.extend({
           });
       }, 1000);
     },
-    removeHistory(item: string) {
-      this.$store.commit("removeSearchHistory", item);
+    /**
+     * Remove history item in store
+     */
+    removeHistory(item: HistoryItem) {
+      this.$store.commit("removeSearchHistory", item.input);
     },
   },
   computed: {
+    /**
+     * Get the history in store
+     */
     searchHistory() {
       return this.$store.state.searchHistory;
+    },
+    /**
+     * Format the date when a new search is done
+     */
+    formatDate() {
+      return new Date(_.now()).toTimeString().substr(0, 8);
     },
   },
 });

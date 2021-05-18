@@ -9,14 +9,19 @@ export default new Vuex.Store({
   },
   mutations: {
     addSearchHistory: (state, payload) => {
-      (state.searchHistory as string[]).push(payload);
+      (state.searchHistory as HistoryItem[]).push(payload);
     },
     removeSearchHistory: (state, payload) => {
       state.searchHistory = state.searchHistory.filter(
-        (item) => item !== payload
+        (item: HistoryItem) => item.input !== payload
       );
     },
   },
   actions: {},
   modules: {},
 });
+
+export interface HistoryItem {
+  input: string;
+  date: Date;
+}
