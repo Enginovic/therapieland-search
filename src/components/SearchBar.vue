@@ -1,15 +1,19 @@
 <template>
   <div class="wrapper">
     <div class="search-bar">
+      <h1>Search for a posts</h1>
       <input
         @input="searchPost"
-        placeholder="Search post title"
+        placeholder="Search post by title"
         class="search-field"
       />
-      <span v-if="typing">You are typing</span>
     </div>
-    <SearchResults :posts="posts" />
-    <SearchHistory />
+    <div style="display: flex">
+      <span v-if="isSearching">Searching...</span>
+      <SearchResults v-if="posts.length && !isSearching" :posts="posts" />
+      <h3 style="width: 100%" v-if="!posts.length && !isSearching">No posts found</h3>
+      <SearchHistory />
+    </div>
   </div>
 </template>
 
@@ -28,7 +32,7 @@ export default Vue.extend({
   },
   data() {
     return {
-      typing: "",
+      isSearching: false,
       posts: [],
       debounce: 0,
     };
@@ -45,12 +49,11 @@ export default Vue.extend({
       }
 
       const date = this.formatDate;
-      this.typing = "Searching post";
+      this.isSearching = true;
       clearTimeout(this.debounce);
 
       // debounce for 1 second to reduce the amount of api calls.
       this.debounce = setTimeout(() => {
-        this.typing = "";
         this.$store.commit("addSearchHistory", {
           input: searchInput,
           date,
@@ -63,6 +66,7 @@ export default Vue.extend({
             this.posts = response.data.filter((post: Post) => {
               return post.title.includes(searchInput);
             });
+            this.isSearching = false;
           })
           .catch((error) => {
             console.log(error);
@@ -96,11 +100,14 @@ interface Post {
 }
 
 .search-bar {
-  width: 100%;
+  margin-bottom: 35px;
 }
 
 .search-field {
   width: 100%;
+  border: 0;
+  border-bottom: 1px solid;
+  padding: 10px 0;
   &:focus-visible {
     outline: none;
   }

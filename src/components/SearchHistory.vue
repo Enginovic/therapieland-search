@@ -1,13 +1,14 @@
 <template>
-  <div class="search-history">
+  <div class="search-history" v-if="searchHistory.length">
+    <h5>History</h5>
     <div
-      class="search-input"
+      class="search-item"
       v-for="(item, index) in searchHistory"
       :key="`item-${index}`"
     >
-      {{ item.input }}
-      {{ item.date }}
-      <div class="remove-history" @click="removeHistory(item)">Remove</div>
+      <div class="item-input">{{ item.input }}</div>
+      <div class="item-date">{{ item.date }}</div>
+      <div class="remove-history" @click="removeHistory(item)">x</div>
     </div>
   </div>
 </template>
@@ -38,9 +39,33 @@ export default Vue.extend({
 
 <style lang="scss">
 .search-history {
+  width: 100%;
+  text-align: end;
   background-color: white;
-  padding: 10px;
-  margin-top: 50px;
   border-radius: 3px;
+}
+
+.search-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  margin-top: 20px;
+  padding-right: 14px;
+}
+
+.item-date {
+  font-size: 9px;
+  font-style: italic;
+  color: #b2b2b2;
+}
+
+.remove-history {
+  position: absolute;
+  cursor: pointer;
+  top: 2px;
+  right: 0;
+  font-size: 10px;
+  color: red;
 }
 </style>

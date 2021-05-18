@@ -1,10 +1,9 @@
 <template>
   <div class="posts" v-if="posts.length">
+    <h5>Results</h5>
     <div class="post" v-for="post in posts" :key="`postId-${post.id}`">
-      <div class="left">
-        {{ post.id }}
-      </div>
-      <div class="right">
+      <div class="post-left">#{{ post.id }}</div>
+      <div class="post-right">
         <h4>{{ post.title }}</h4>
         <p>{{ post.body }}</p>
       </div>
@@ -20,16 +19,17 @@ export default Vue.extend({
 </script>
 
 <style lang="scss">
-.posts {
-  flex: 1;
-  background-color: white;
-  margin: 50px 50px 50px 0;
-}
-
 .post {
   display: flex;
-  padding: 10px;
-  border-radius: 3px;
+  padding: 10px 0 20px;
   margin: 10px 0;
+  border-bottom: 1px solid #e1e1e1;
+  &:last-child {
+    border-bottom: 0;
+  }
+}
+
+.post-left {
+  min-width: 50px;
 }
 </style>
