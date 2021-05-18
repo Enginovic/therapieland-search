@@ -1,18 +1,37 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png" />
-    <HelloWorld msg="Welcome to Your Vue.js + TypeScript App" />
+  <div id="home">
+    <div class="wrapper">
+      <SearchBar />
+    </div>
   </div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
-import HelloWorld from "@/components/HelloWorld.vue"; // @ is an alias to /src
+import SearchBar from "@/components/SearchBar.vue";
 
 export default Vue.extend({
   name: "Home",
   components: {
-    HelloWorld,
+    SearchBar,
   },
 });
 </script>
+
+<style lang="scss">
+* {
+  margin: 0;
+  padding: 0;
+}
+
+#home {
+  background-color: #d8f1ff;
+  padding: 100px 0;
+}
+
+.wrapper {
+  width: 800px;
+  height: 100vh;
+  margin: 0 auto;
+}
+</style>
