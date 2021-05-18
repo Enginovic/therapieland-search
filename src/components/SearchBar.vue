@@ -11,7 +11,9 @@
     <div style="display: flex">
       <span v-if="isSearching">Searching...</span>
       <SearchResults v-if="posts.length && !isSearching" :posts="posts" />
-      <h3 style="width: 100%" v-if="!posts.length && !isSearching">No posts found</h3>
+      <h3 style="width: 100%" v-if="!posts.length && !isSearching">
+        No posts found
+      </h3>
       <SearchHistory />
     </div>
   </div>
