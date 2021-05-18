@@ -2,14 +2,25 @@
   <div id="search-bar">
     <input
       @input="debounceSearch"
-      v-model="searchInput"
       placeholder="Search post title"
       class="search-field"
     />
     <span v-if="typing">You are typing</span>
-    <div class="posts" v-if="posts">
-      <div class="post" v-for="post in posts" :key="`postId-${post.id}`">
-        {{ post.title }}
+    <div class="container">
+      <div class="posts" v-if="posts">
+        <div class="post" v-for="post in posts" :key="`postId-${post.id}`">
+          {{ post.title }}
+        </div>
+      </div>
+      <div class="search-history">
+        <div
+          class="search-input"
+          v-for="item in searchHistory"
+          :key="`item-${item}`"
+        >
+          {{ item }}
+          <div class="remove-history" @click="removeHistory(item)">Remove</div>
+        </div>
       </div>
     </div>
   </div>
@@ -31,7 +42,8 @@ export default Vue.extend({
   },
   methods: {
     debounceSearch(event: any) {
-      if (!event.target.value) {
+      const searchInput = event.target.value;
+      if (!searchInput) {
         this.posts = [];
         return;
       }
@@ -40,17 +52,26 @@ export default Vue.extend({
       clearTimeout(this.debounce);
       this.debounce = setTimeout(() => {
         this.typing = "";
+        this.$store.commit("addSearchHistory", searchInput);
         axios
           .get("https://jsonplaceholder.typicode.com/posts")
           .then((response) => {
             this.posts = response.data.filter((post: Post) => {
-              return post.title.includes(event.target.value);
+              return post.title.includes(searchInput);
             });
           })
           .catch((error) => {
             console.log(error);
           });
       }, 1000);
+    },
+    removeHistory(item: string) {
+      this.$store.commit("removeSearchHistory", item);
+    },
+  },
+  computed: {
+    searchHistory() {
+      return this.$store.state.searchHistory;
     },
   },
 });
@@ -77,5 +98,9 @@ interface Post {
 }
 .post {
   border-bottom: 1px solid;
+}
+
+.container {
+  display: flex;
 }
 </style>
