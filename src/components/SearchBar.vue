@@ -1,29 +1,15 @@
 <template>
-  <div id="search-bar">
-    <input
-      @input="searchPost"
-      placeholder="Search post title"
-      class="search-field"
-    />
-    <span v-if="typing">You are typing</span>
-    <div class="container">
-      <div class="posts" v-if="posts">
-        <div class="post" v-for="post in posts" :key="`postId-${post.id}`">
-          {{ post.title }}
-        </div>
-      </div>
-      <div class="search-history">
-        <div
-          class="search-input"
-          v-for="(item, index) in searchHistory"
-          :key="`item-${index}`"
-        >
-          {{ item.input }}
-          {{ item.date }}
-          <div class="remove-history" @click="removeHistory(item)">Remove</div>
-        </div>
-      </div>
+  <div class="wrapper">
+    <div class="search-bar">
+      <input
+        @input="searchPost"
+        placeholder="Search post title"
+        class="search-field"
+      />
+      <span v-if="typing">You are typing</span>
     </div>
+    <SearchResults :posts="posts" />
+    <SearchHistory />
   </div>
 </template>
 
@@ -31,10 +17,15 @@
 import Vue from "vue";
 import axios from "axios";
 import _ from "lodash"; // type is added though..
-import { HistoryItem } from "@/store";
+
+import SearchResults from "@/components/SearchResults.vue";
+import SearchHistory from "@/components/SearchHistory.vue";
 
 export default Vue.extend({
-  name: "SearchBar",
+  components: {
+    SearchResults,
+    SearchHistory,
+  },
   data() {
     return {
       typing: "",
@@ -78,20 +69,8 @@ export default Vue.extend({
           });
       }, 1000);
     },
-    /**
-     * Remove history item in store
-     */
-    removeHistory(item: HistoryItem) {
-      this.$store.commit("removeSearchHistory", item.input);
-    },
   },
   computed: {
-    /**
-     * Get the history in store
-     */
-    searchHistory() {
-      return this.$store.state.searchHistory;
-    },
     /**
      * Format the date when a new search is done
      */
@@ -110,22 +89,20 @@ interface Post {
 </script>
 
 <style lang="scss" scoped>
+.wrapper {
+  width: 800px;
+  margin: 0 auto;
+  padding: 100px 0;
+}
+
+.search-bar {
+  width: 100%;
+}
+
 .search-field {
   width: 100%;
-  border-radius: 3px;
-  border: 0;
-  padding: 10px;
-  background: white;
-
   &:focus-visible {
     outline: none;
   }
-}
-.post {
-  border-bottom: 1px solid;
-}
-
-.container {
-  display: flex;
 }
 </style>
